@@ -1,0 +1,10 @@
+<!-- app/views/search/index.html.erb -->
+<% if @results.present? %>
+  <ul>
+    <% @results.each do |result| %>
+      <li><%= result %></li> <!-- Adjust this to match the structure of your results -->
+    <% end %>
+  </ul>
+<% else %>
+  <p>No results found.</p>
+<% end %>
