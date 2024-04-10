@@ -27,6 +27,10 @@
             <% end %>
           </li>
 
+          <li class="nav-item">
+            <%= link_to "Search History", search_history_path, class: "nav-link" %>
+          </li>
+
           <li class="nav-item dropdown">
             <%= link_to "#", id: "navbar-dropdown", class: "nav-link dropdown-toggle", data: { target: "nav-account-dropdown", bs_toggle: "dropdown" }, aria: { haspopup: true, expanded: false } do %>
               <%= image_tag avatar_path(current_user, size: 40), height: 20, width: 20, class: "rounded" %>
