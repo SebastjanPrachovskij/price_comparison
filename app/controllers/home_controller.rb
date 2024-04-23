@@ -15,4 +15,9 @@ class HomeController < ApplicationController
     sort_order = params[:order] == 'asc' ? 'asc' : 'desc'
     @results = current_user.search_results.order("#{sort_column} #{sort_order}")
   end
+
+  def product_graph
+    @result = SearchResult.find(params[:id])
+    # Assuming you will have date and other necessary data in @result to plot the graph
+  end
 end

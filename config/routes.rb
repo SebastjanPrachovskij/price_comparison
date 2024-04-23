@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get 'search_history', to: 'home#search_history'
   get '/privacy', to: 'home#privacy'
   get '/terms', to: 'home#terms'
+  get 'product_graph/:id', to: 'home#product_graph', as: 'product_graph'
 authenticate :user, lambda { |u| u.admin? } do
   mount Sidekiq::Web => '/sidekiq'
 

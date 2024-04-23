@@ -1,46 +1,13 @@
-<!-- app/views/home/search_history.html.erb -->
-<div class="container my-4">
-  <h2>Search History</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">
-          <%= link_to "Query", search_history_path(sort: 'query', order: params[:order] == 'asc' && params[:sort] == 'query' ? 'desc' : 'asc') %>
-          <% if params[:sort] == 'query' %>
-            <%= params[:order] == 'asc' ? '↑' : '↓' %>
-          <% end %>
-        </th>
-        <th scope="col">
-          <%= link_to "Location", search_history_path(sort: 'location', order: params[:order] == 'asc' && params[:sort] == 'location' ? 'desc' : 'asc') %>
-          <% if params[:sort] == 'location' %>
-            <%= params[:order] == 'asc' ? '↑' : '↓' %>
-          <% end %>
-        </th>
-        <th scope="col">Product</th>
-        <th scope="col">
-          <%= link_to "Price", search_history_path(sort: 'price', order: params[:order] == 'asc' && params[:sort] == 'price' ? 'desc' : 'asc') %>
-          <% if params[:sort] == 'price' %>
-            <%= params[:order] == 'asc' ? '↑' : '↓' %>
-          <% end %>
-        </th>
-        <th scope="col">Link</th>
-        <th scope="col">
-          <%= link_to "Date", search_history_path(sort: 'created_at', order: params[:order] == 'asc' && params[:sort] == 'created_at' ? 'desc' : 'asc') %>
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @results.each_with_index do |result, index| %>
-        <tr>
-          <th scope="row"><%= index + 1 %></th>
-          <td><%= result.query %></td>
-          <td><%= result.location %></td>
-          <td><%= result.title %></td>
-          <td><%= result.price %></td>
-          <td><%= link_to 'View', result.link, target: '_blank' %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<!-- Inside app/views/home/search_history.html.erb -->
+<tbody>
+  <% @results.each_with_index do |result, index| %>
+    <tr>
+      <th scope="row"><%= index + 1 %></th>
+      <td><%= result.query %></td>
+      <td><%= result.location %></td>
+      <td><%= result.title %></td>
+      <td><%= result.price %></td>
+      <td><%= link_to 'View', product_graph_path(result.id), target: '_blank' %></td>
+    </tr>
+  <% end %>
+</tbody>
