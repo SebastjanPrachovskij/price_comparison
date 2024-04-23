@@ -1,13 +1,23 @@
-<!-- Inside app/views/home/search_history.html.erb -->
-<tbody>
-  <% @results.each_with_index do |result, index| %>
-    <tr>
-      <th scope="row"><%= index + 1 %></th>
-      <td><%= result.query %></td>
-      <td><%= result.location %></td>
-      <td><%= result.title %></td>
-      <td><%= result.price %></td>
-      <td><%= link_to 'View', product_graph_path(result.id), target: '_blank' %></td>
-    </tr>
-  <% end %>
-</tbody>
+<div class="container my-4">
+  <h2>Search History</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Product ID</th>
+        <th scope="col">Title</th>
+        <th scope="col">GL</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @unique_products.each do |product| %>
+        <tr>
+          <td><%= product.product_id %></td>
+          <td><%= product.title %></td>
+          <td><%= product.gl %></td>
+          <td><%= link_to 'View Details', product_details_path(product_id: product.product_id, gl: product.gl), class: 'btn btn-primary' %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -3,14 +3,13 @@ class SearchController < ApplicationController
   MAX_THREADS = 5
 
   def index
-    if params[:file].present?
-      perform_search_from_csv(params[:file])
-    elsif params[:query].present?
-      @results = search_api(params[:query], params[:location])
-    else
-      # Handle the case where the search parameters are empty
-      @results = []
-    end
+    @results = if params[:file].present?
+        perform_search_from_csv(params[:file])
+      elsif params[:product_id].present?
+        search_api(params[:product_id], params[:gl])
+      else
+        []
+      end
   end
 
   private
@@ -18,74 +17,63 @@ class SearchController < ApplicationController
   def perform_search_from_csv(file)
     require 'csv'
     queue = Queue.new
-  
-    CSV.foreach(file.path, headers: true, col_sep: ';') do |row|
-      queue << row
-    end
-  
+
+    CSV.foreach(file.path, headers: true, col_sep: ';') { |row| queue << row }
+
     workers = Array.new(MAX_THREADS) do
       Thread.new do
-        until queue.empty?
-          row = queue.pop(true) rescue nil
-          next unless row
-  
-          query = row['Query']
-          location = row['Location']
-          gl = row['Gl']
-          hl = row['Hl']
-          domain = row['Domain']
-          search_api(query, location, gl, hl, domain)
+        begin
+          until queue.empty?
+            row = queue.pop(true)
+            search_api(row['Product ID'], row['Gl'])
+          end
+        rescue ThreadError
+          # Handle empty queue exception
         end
       end
     end
-  
+
     workers.each(&:join)
-    @results = workers.map(&:value).flatten
+    @results = workers.flat_map(&:value)
   end
-  
 
-  def search_api(query, location, gl, hl, domain)
-    require "net/http"
-    require "uri"
-    require "json"
-
-    uri = URI.parse("https://www.searchapi.io/api/v1/search")
+  def search_api(product_id, gl)
+    uri = URI("https://www.searchapi.io/api/v1/search")
     params = {
-      engine: "google_shopping",
-      q: query,
-      location: location,
+      engine: "google_product_offers",
+      product_id: product_id,
       gl: gl,
-      hl: hl,
-      google_domain: domain,
       api_key: ENV['SEARCHAPI_KEY'],
-      num: 8
-    }.compact_blank
-
+      sort_by: "total_price",
+      durability: "new"
+    }
     uri.query = URI.encode_www_form(params)
-    
-    response = Net::HTTP.get_response(uri)
-    
-    if response.is_a?(Net::HTTPSuccess)
-      parsed_response = JSON.parse(response.body)
-      
-      shopping_results = parsed_response["shopping_results"]
 
-      shopping_results.map do |result|
-        current_user.search_results.create!(
-          {
-            query: parsed_response.dig("search_parameters","q") || query,
-            location: parsed_response.dig("search_parameters", "location_used") || location,
-            product_id: result["product_id"],  
-            title: result["title"],
-            price: result["price"],
-            extracted_price: result["extracted_price"],
-            link: result["link"],
-            thumbnail: result["thumbnail"]
-          }
-        )
-      end
-    else
-      { error: "There was an error with the SearchApi." }
+    response = fetch_data(uri)
+    process_response(response) if response.is_a?(Net::HTTPSuccess)
+  end
+
+  def fetch_data(uri)
+    Net::HTTP.get_response(uri)
+  rescue StandardError => e
+    Rails.logger.error("Failed to fetch data: #{e.message}")
+    nil
+  end
+
+  def process_response(response)
+    parsed_response = JSON.parse(response.body)
+    product_info = parsed_response["product"]
+    offers = parsed_response["offers"]
+
+    offers&.map do |result|
+      current_user.search_results.create!(
+        product_id: product_info["product_id"],
+        title: product_info["title"],
+        gl: parsed_response["search_parameters"]["gl"],
+        total_price: result["total_price"],
+        extracted_total_price: result["extracted_total_price"],
+        date: Time.zone.today
+      )
     end
   end
 end

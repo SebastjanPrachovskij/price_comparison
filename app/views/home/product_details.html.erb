@@ -1,0 +1,41 @@
+<div class="container my-4">
+  <h2>Details for Product ID: <%= @product_id %></h2>
+  <h3>Located in: <%= @gl.upcase %></h3>
+
+  <%= form_with(url: product_details_path, method: :get, local: true, class: 'mb-3') do |form| %>
+    <div class="row g-3 align-items-center">
+      <div class="col-auto">
+        <%= form.label :filter_date, "Filter by date:", class: "col-form-label" %>
+      </div>
+      <div class="col-auto">
+        <%= form.date_field :filter_date, max: Date.today.to_s, class: "form-control" %>
+      </div>
+      <div class="col-auto">
+        <%= form.submit "Filter", class: "btn btn-outline-primary" %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @average_price %>
+    <div>Average price for <%= @filter_date %>:
+      <b><%= @average_price %></b>
+    </div>
+  <% end %>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @search_results.each do |result| %>
+        <tr>
+          <td><%= result.date.strftime("%Y-%m-%d") %></td>
+          <td><%= result.total_price %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
