@@ -36,5 +36,9 @@ class HomeController < ApplicationController
     end
 
     @search_results = results_scope.order(date: :desc)
+
+    @chart_data = results_scope.group_by_day(:date).average(:extracted_total_price).map do |date, price|
+      [date.strftime("%Y-%m-%d"), price]
+    end.to_h
   end
 end

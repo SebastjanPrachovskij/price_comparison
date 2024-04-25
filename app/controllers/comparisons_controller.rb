@@ -1,6 +1,8 @@
 class ComparisonsController < ApplicationController
   before_action :authenticate_user!
 
+  include ComparisonsHelper
+
   def show
     @product_id = params[:product_id]
     start_date = params[:start_date].presence ? Date.parse(params[:start_date]) : (Date.today - 30.days)

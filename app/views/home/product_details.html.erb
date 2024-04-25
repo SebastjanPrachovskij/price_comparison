@@ -22,7 +22,10 @@
     </div>
   <% end %>
 
-  <%= link_to 'Compare Prices', comparison_path(@product_id), class: 'btn btn-info' %>
+  <%= link_to 'Compare Prices', show_comparison_path(@product_id), class: 'btn btn-info' %>
+
+  <%= line_chart @chart_data, height: '500px', xtitle: 'Date', ytitle: 'Average Price' %>
+
 
   <table class="table">
     <thead>

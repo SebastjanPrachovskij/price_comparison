@@ -8,8 +8,9 @@ Rails.application.routes.draw do
   get "/terms", to: "home#terms"
   get "product_graph/:id", to: "home#product_graph", as: :product_graph
   get "product_details/:product_id/:gl", to: "home#product_details", as: :product_details
-  get "comparisons/:product_id", to: "comparisons#show", as: "comparison"
-  
+  get "comparisons/:product_id", to: "comparisons#show", as: "show_comparison"  
+  get 'comparisons/:product_id/comparison', to: 'comparisons#comparison', as: 'detailed_comparison'
+
 authenticate :user, lambda { |u| u.admin? } do
   mount Sidekiq::Web => "/sidekiq"
 

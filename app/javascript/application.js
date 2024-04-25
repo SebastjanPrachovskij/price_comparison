@@ -10,6 +10,7 @@ require("@rails/activestorage").start()
 require("local-time").start()
 require("@rails/ujs").start()
 
+import "chartkick/chart.js"
 import './channels/**/*_channel.js'
 import "./controllers"
 
