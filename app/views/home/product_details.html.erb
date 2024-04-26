@@ -2,13 +2,15 @@
   <h2>Details for Product ID: <%= @product_id %></h2>
   <h3>Located in: <%= @gl.upcase %></h3>
 
-  <%= form_with(url: product_details_path, method: :get, local: true, class: 'mb-3') do |form| %>
+  <%= form_with(url: product_details_path(product_id: @product_id, gl: @gl), method: :get, local: true, class: 'mb-3') do |form| %>
     <div class="row g-3 align-items-center">
       <div class="col-auto">
-        <%= form.label :filter_date, "Filter by date:", class: "col-form-label" %>
+        <%= form.label :start_date, "Start Date:", class: "col-form-label" %>
+        <%= form.date_field :start_date, max: Date.today.to_s, value: params[:start_date], class: "form-control" %>
       </div>
       <div class="col-auto">
-        <%= form.date_field :filter_date, max: Date.today.to_s, class: "form-control" %>
+        <%= form.label :end_date, "End Date:", class: "col-form-label" %>
+        <%= form.date_field :end_date, max: Date.today.to_s, value: params[:end_date], class: "form-control" %>
       </div>
       <div class="col-auto">
         <%= form.submit "Filter", class: "btn btn-outline-primary" %>
@@ -16,22 +18,16 @@
     </div>
   <% end %>
 
-  <% if @average_price %>
-    <div>Average price for <%= @filter_date %>:
-      <b><%= @average_price %></b>
-    </div>
-  <% end %>
-
   <%= link_to 'Compare Prices', show_comparison_path(@product_id), class: 'btn btn-info' %>
 
   <%= line_chart @chart_data, height: '500px', xtitle: 'Date', ytitle: 'Average Price' %>
-
 
   <table class="table">
     <thead>
       <tr>
         <th>Date</th>
         <th>Price</th>
+        <th>Link</th>
       </tr>
     </thead>
     <tbody>
@@ -39,6 +35,11 @@
         <tr>
           <td><%= result.date.strftime("%Y-%m-%d") %></td>
           <td><%= result.total_price %></td>
+          <td>
+            <% if result.link.present? %>
+             <%= link_to 'Link', result.link %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>

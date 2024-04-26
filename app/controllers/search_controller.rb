@@ -69,9 +69,11 @@ class SearchController < ApplicationController
       current_user.search_results.create!(
         product_id: product_info["product_id"],
         title: product_info["title"],
+        link: result["link"],
         gl: parsed_response["search_parameters"]["gl"],
         total_price: result["total_price"],
         extracted_total_price: result["extracted_total_price"],
+        json_data: result,
         date: Time.zone.today
       )
     end
