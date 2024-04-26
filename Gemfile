@@ -32,7 +32,8 @@ gem "redis", ">= 4.0.1"
 # Use for Graphs
 gem 'chartkick'
 gem 'groupdate'
-
+# Use for Cron
+gem "sidekiq-cron"
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
@@ -82,6 +83,7 @@ gem "omniauth-twitter", "~> 1.4"
 gem "pretender", "~> 0.3.4"
 gem "pundit", "~> 2.1"
 gem "sidekiq", "~> 6.2"
+
 gem "sitemap_generator", "~> 6.1"
 gem "whenever", require: false
 gem "responders", github: "heartcombo/responders", branch: "main"

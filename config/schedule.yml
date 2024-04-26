@@ -1,0 +1,13 @@
+
+multi_search_job:
+  cron: "0 12 * * *"  # Runs daily at midnight
+  class: SearchApiWorker
+  queue: default
+  args:
+    - {'Product ID': '1916808505720973137', 'Gl': 'it'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'pl'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'US'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'de'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'fr'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'Gb'}
+    - {'Product ID': '1916808505720973137', 'Gl': 'es'}
