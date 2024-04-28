@@ -19,8 +19,9 @@
   <% end %>
 
   <%= link_to 'Compare Prices', show_comparison_path(@product_id), class: 'btn btn-info' %>
+  <%= button_tag 'Prophet Forecast', type: 'button', data: {controller: "forecast", action: "click->forecast#updateGraph", forecast_url_value: product_forecast_path(@product_id, @gl)}, class: 'btn btn-success' %>
 
-  <%= line_chart @chart_data, height: '500px', xtitle: 'Date', ytitle: 'Average Price' %>
+  <%= line_chart @chart_data, height: '500px', xtitle: 'Date', ytitle: 'Average Price', id: 'price_chart' %>
 
   <table class="table">
     <thead>
