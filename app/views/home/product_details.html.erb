@@ -21,6 +21,10 @@
   <%= link_to 'Compare Prices', show_comparison_path(@product_id), class: 'btn btn-info' %>
   <%= button_tag 'Prophet Forecast', type: 'button', data: {controller: "forecast", action: "click->forecast#updateGraph", forecast_url_value: product_forecast_path(@product_id, @gl)}, class: 'btn btn-success' %>
 
+  <%= button_tag 'LSTM Forecast', type: 'button', class: 'btn btn-secondary', onclick: "requestForecast('lstm')" %>
+  <%= button_tag 'GRU Forecast', type: 'button', class: 'btn btn-secondary', onclick: "requestForecast('gru')" %>
+  <%= button_tag 'SARIMAX Forecast', type: 'button', class: 'btn btn-secondary', onclick: "requestForecast('sarimax')" %>
+
   <%= line_chart @chart_data, height: '500px', xtitle: 'Date', ytitle: 'Average Price', id: 'price_chart' %>
 
   <table class="table">
@@ -36,13 +40,47 @@
         <tr>
           <td><%= result.date.strftime("%Y-%m-%d") %></td>
           <td><%= result.total_price %></td>
-          <td>
-            <% if result.link.present? %>
-             <%= link_to 'Link', result.link %>
-            <% end %>
-          </td>
+          <td><%= link_to 'Link', result.link if result.link.present? %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
+
+<script>
+  function requestForecast(method) {
+    const url = `http://127.0.0.1:5000/predict/${method}`; 
+    const historicalData = <%=@chart_data.to_json.html_safe%>; 
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({series: historicalData}),
+      credentials: 'same-origin' 
+    })
+    .then(response => response.json())
+    .then(forecastData => {
+      console.log("Forecast data received:", forecastData);
+      updateChart('price_chart', historicalData, forecastData);
+    })
+    .catch(error => console.error('Error:', error));
+  }
+
+  function updateChart(chartId, historicalData, forecastData) {
+    var chart = Chartkick.charts[chartId];
+    if (chart) {
+      // Combining historical and forecast data
+      let updatedData = [
+        {name: "Historical", data: historicalData, color: "#3366CC"},
+        {name: "Forecast", data: forecastData, color: "#D9534F"}
+      ];
+      chart.updateData(updatedData);
+    } else {
+      console.log("Chart not found: ", chartId);
+    }
+  }
+</script>
+
