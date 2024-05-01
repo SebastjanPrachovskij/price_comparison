@@ -8,5 +8,6 @@ class SearchResult < ApplicationRecord
   validates :gl, presence: true
   validates :total_price, presence: true
   validates :extracted_total_price, presence: true, numericality: true
+  validates :converted_total_price, presence: true, numericality: true
   validates :date, presence: true
 end

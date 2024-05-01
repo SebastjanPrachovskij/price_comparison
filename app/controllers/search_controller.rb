@@ -38,6 +38,8 @@ class SearchController < ApplicationController
   end
 
   def search_api(product_id, gl)
+    exchange_response = fetch_exchange_rate(gl)
+
     uri = URI("https://www.searchapi.io/api/v1/search")
     params = {
       engine: "google_product_offers",
@@ -50,7 +52,7 @@ class SearchController < ApplicationController
     uri.query = URI.encode_www_form(params)
 
     response = fetch_data(uri)
-    process_response(response) if response.is_a?(Net::HTTPSuccess)
+    process_response(response, exchange_response) if response.is_a?(Net::HTTPSuccess)
   end
 
   def fetch_data(uri)
@@ -60,12 +62,15 @@ class SearchController < ApplicationController
     nil
   end
 
-  def process_response(response)
+  def process_response(response, exchange_response)
     parsed_response = JSON.parse(response.body)
     product_info = parsed_response["product"]
     offers = parsed_response["offers"]
+    exchange_rate = exchange_response&.dig("summary", "price")
 
     offers&.map do |result|
+      converted_total_price = result["extracted_total_price"] * exchange_rate if exchange_rate.present?
+
       current_user.search_results.create!(
         product_id: product_info["product_id"],
         title: product_info["title"],
@@ -73,9 +78,40 @@ class SearchController < ApplicationController
         gl: parsed_response["search_parameters"]["gl"],
         total_price: result["total_price"],
         extracted_total_price: result["extracted_total_price"],
+        converted_total_price: converted_total_price,
         json_data: result,
         date: Time.zone.today
       )
+    end
+  end
+
+  def fetch_exchange_rate(gl)
+    case gl&.upcase
+    when "US"
+      q = "USD-EUR"
+    when "GB"
+      q = "GBP-EUR"
+    when "PL"
+      q = "PLN-EUR"
+    else
+      return 1.0  
+    end
+
+    if q.present?
+      uri = URI("https://www.searchapi.io/api/v1/search")
+      params = {
+        engine: "google_finance",
+        q: q,
+        api_key: ENV['SEARCHAPI_KEY']
+      }
+
+      uri.query = URI.encode_www_form(params)
+
+      response = fetch_data(uri)
+      
+      if response.is_a?(Net::HTTPSuccess)
+        JSON.parse(response.body)
+      end
     end
   end
 end

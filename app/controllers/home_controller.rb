@@ -15,11 +15,6 @@ class HomeController < ApplicationController
     @unique_products = current_user.search_results.select('distinct on (product_id, gl) product_id, gl, title').order(:product_id, :gl)
   end
 
-  def product_graph
-    @result = SearchResult.find(params[:id])
-    # Assuming you will have date and other necessary data in @result to plot the graph
-  end
-
   def product_details
     @product_id = params[:product_id]
     @gl = params[:gl]

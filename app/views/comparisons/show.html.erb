@@ -17,7 +17,7 @@
     </div>
   <% end %>
 
-<%= line_chart prepare_chart_data(@comparisons), xtitle: "Date", ytitle: "Average Price" %>
+  <%= line_chart prepare_chart_data(@comparisons), xtitle: "Date", ytitle: "Average Price" %>
 
   <table class="table">
     <thead>
@@ -30,9 +30,9 @@
     <tbody>
       <% @comparisons.each do |comparison| %>
         <tr>
-          <td><%= comparison.date.strftime("%Y-%m-%d") %></td>
-          <td><%= comparison.gl.upcase %></td>
-          <td><%= number_to_currency(comparison.average_price) %></td>
+          <td><%= comparison.dig(:date).strftime("%Y-%m-%d") %></td>
+          <td><%= comparison.dig(:gl).upcase %></td>
+          <td><%= number_to_currency(comparison.dig(:average_price), unit: "€") %></td>
         </tr>
       <% end %>
     </tbody>

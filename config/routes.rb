@@ -6,7 +6,6 @@ Rails.application.routes.draw do
   get "search_history", to: "home#search_history"
   get "/privacy", to: "home#privacy"
   get "/terms", to: "home#terms"
-  get "product_graph/:id", to: "home#product_graph", as: :product_graph
   get "product_details/:product_id/:gl", to: "home#product_details", as: :product_details
   get "comparisons/:product_id", to: "comparisons#show", as: "show_comparison"  
   get "comparisons/:product_id/comparison", to: "comparisons#comparison", as: "detailed_comparison"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_04_26_135657) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_01_172900) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_04_26_135657) do
     t.string "total_price"
     t.jsonb "json_data"
     t.string "link"
+    t.float "converted_total_price"
     t.index ["user_id"], name: "index_search_results_on_user_id"
   end
 
