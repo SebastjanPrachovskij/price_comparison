@@ -66,7 +66,7 @@ class SearchController < ApplicationController
     parsed_response = JSON.parse(response.body)
     product_info = parsed_response["product"]
     offers = parsed_response["offers"]
-    exchange_rate = exchange_response&.dig("summary", "price")
+    exchange_rate = exchange_response&.dig("summary", "price") || 1.0
 
     offers&.map do |result|
       converted_total_price = result["extracted_total_price"] * exchange_rate if exchange_rate.present?
@@ -94,7 +94,7 @@ class SearchController < ApplicationController
     when "PL"
       q = "PLN-EUR"
     else
-      return 1.0  
+      return nil
     end
 
     if q.present?
