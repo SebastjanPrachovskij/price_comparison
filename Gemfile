@@ -63,7 +63,7 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
-
+  gem 'rails-erd'
   # Add speed badges [https://github.com/MiniProfiler/rack-mini-profiler]
   # gem "rack-mini-profiler"
 
@@ -89,7 +89,6 @@ gem "omniauth-twitter", "~> 1.4"
 gem "pretender", "~> 0.3.4"
 gem "pundit", "~> 2.1"
 gem "sidekiq", "~> 6.2"
-
 gem "sitemap_generator", "~> 6.1"
 gem "whenever", require: false
 gem "responders", github: "heartcombo/responders", branch: "main"

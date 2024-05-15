@@ -33,6 +33,13 @@ class HomeController < ApplicationController
     @chart_data = results_scope.group_by_day(:date).average(:extracted_total_price).map do |date, price|
       [date.strftime("%Y-%m-%d"), price]
     end.to_h
+
+    if @chart_data.values.any?
+      min_price = @chart_data.values&.compact_blank&.min
+      max_price = @chart_data.values&.compact_blank&.max
+      @min_chart_value = min_price * 0.95
+      @max_chart_value = max_price * 1.05
+    end
   end
 
   def forecast
