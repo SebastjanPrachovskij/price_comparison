@@ -51,8 +51,15 @@ class HomeController < ApplicationController
       [date.strftime("%Y-%m-%d"), price]
     end.to_h
 
-    @forecast = Prophet.forecast(historical_data, count: 10)
+    @forecast = Prophet.forecast(historical_data, count: 24)
     forecast_data = @forecast.map { |date, price| [date, price] }.to_h
+
+    # Collect actual prices and forecasted prices for error calculation
+    actual_prices = historical_data.values.compact
+    predicted_prices = forecast_data.values.take(actual_prices.size)
+
+    # Call print_errors to output the error metrics
+    print_errors(actual_prices, predicted_prices, 'Prophet', 'Prophet Error Metrics')
 
     combined_data = {
       historical: historical_data,
@@ -66,5 +73,42 @@ class HomeController < ApplicationController
     respond_to do |format|
       format.json { render json: combined_data.merge(min_chart_value: @min_chart_value, max_chart_value: @max_chart_value) }
     end
+  end
+
+  private
+
+  def mean_squared_error(actual, predicted)
+    sum = 0.0
+    actual.zip(predicted).each do |a, p|
+      sum += (a - p) ** 2
+    end
+    sum / actual.size
+  end
+
+  def mean_absolute_error(actual, predicted)
+    sum = 0.0
+    actual.zip(predicted).each do |a, p|
+      sum += (a - p).abs
+    end
+    sum / actual.size
+  end
+
+  def print_errors(actual, predicted, model_name, label)
+    if actual.size != predicted.size
+      puts "Error: Inconsistent data lengths. Actual: #{actual.size}, Predictions: #{predicted.size}"
+      return
+    end
+
+    puts label
+    mse_value = mean_squared_error(actual, predicted)
+    rmse_value = Math.sqrt(mse_value)
+    mae_value = mean_absolute_error(actual, predicted)
+    mape_value = actual.zip(predicted).map { |a, p| (a - p).abs / a.to_f }.sum / actual.size * 100
+
+    puts "MSE: #{mse_value}"
+    puts "SQRT(MSE): #{rmse_value}"
+    puts "MAE: #{mae_value}"
+    puts "RMSE: #{rmse_value}"
+    puts "MAPE: #{mape_value}%"
   end
 end

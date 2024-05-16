@@ -71,7 +71,7 @@
     .catch(error => console.error('Error:', error));
   }
 
-function updateChart(chartId, historicalData, forecastData, min, max) {
+function updateChart(chartId, historicalData, forecastData) {
     var chart = Chartkick.charts[chartId];
     if (chart) {
         
@@ -80,7 +80,6 @@ function updateChart(chartId, historicalData, forecastData, min, max) {
             {name: "Forecast", data: forecastData, color: "#D9534F"}
         ];
         chart.updateData(updatedData);
-        chart.setOptions({min: min, max: max});
     } else {
         console.error("Chart not found: ", chartId);
     }

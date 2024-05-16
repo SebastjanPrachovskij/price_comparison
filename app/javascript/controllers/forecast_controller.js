@@ -1,4 +1,3 @@
-// app/javascript/controllers/forecast_controller.js
 import { Controller } from "@hotwired/stimulus";
 import Chartkick from "chartkick";
 
