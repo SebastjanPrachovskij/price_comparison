@@ -12,11 +12,19 @@ export default class extends Controller {
     fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
       .then(response => response.json())
       .then(data => {
-        console.log("Combined data received:", data);
+
+        const minChartValue = data.min_chart_value;
+        const maxChartValue = data.max_chart_value;
+
+
         new Chartkick.LineChart("price_chart", [
           {name: "Historical", data: data.historical, color: "#3366CC"},
           {name: "Forecast", data: data.forecast, color: "#D9534F"}
-        ], {refresh: true});
+        ], {
+          refresh: true,
+          min: minChartValue * 0.95,
+          max: maxChartValue * 1.05
+        });
       })
       .catch(error => console.error('Error fetching data:', error));
   }  

@@ -45,40 +45,26 @@ class HomeController < ApplicationController
   def forecast
     @product_id = params[:product_id]
     @gl = params[:gl]
-    results_scope = current_user.search_results.where(product_id: @product_id, gl: @gl).order(:date)
+    results_scope = current_user.search_results.where(product_id: @product_id, gl: @gl)
   
-    historical_data = results_scope.pluck(:date, :extracted_total_price).map do |date, price|
+    historical_data = results_scope.group_by_day(:date).average(:extracted_total_price).map do |date, price|
       [date.strftime("%Y-%m-%d"), price]
     end.to_h
 
-    @forecast = Prophet.forecast(historical_data, count: 10) # Assume this returns a hash
+    @forecast = Prophet.forecast(historical_data, count: 10)
     forecast_data = @forecast.map { |date, price| [date, price] }.to_h
 
     combined_data = {
       historical: historical_data,
       forecast: forecast_data
     }
-    # ==================================
-    # start_date = Date.today - 365.days  # Start from one year ago
-    # end_date = Date.today  # Until today
-    
-    # # Create a hash with random prices over the past year
-    # series = (start_date..end_date).each_with_object({}) do |date, hash|
-    #   random_price = rand(100.0..200.0).round(2)
-    #   hash[date.strftime("%Y-%m-%d")] = random_price
-    # end
 
-    # @forecast = Prophet.forecast(series, count: 10)
+    all_prices = historical_data.values + forecast_data.values
+    @min_chart_value = all_prices.compact_blank.min
+    @max_chart_value = all_prices.compact_blank.max
 
-    # forecast_series = @forecast.map { |date, price| [date.strftime("%Y-%m-%d"), price] }.to_h
-
-    # combined_data = {
-    #   historical: series,
-    #   forecast: forecast_series
-    # }
-   # ==================================
     respond_to do |format|
-      format.json { render json: combined_data }
+      format.json { render json: combined_data.merge(min_chart_value: @min_chart_value, max_chart_value: @max_chart_value) }
     end
   end
 end

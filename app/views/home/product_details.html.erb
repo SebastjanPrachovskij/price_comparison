@@ -19,7 +19,7 @@
   <% end %>
 
   <%= link_to 'Compare Prices', show_comparison_path(@product_id), class: 'btn btn-info' %>
-  <%= button_tag 'Prophet Forecast', type: 'button', data: {controller: "forecast", action: "click->forecast#updateGraph", forecast_url_value: product_forecast_path(@product_id, @gl)}, class: 'btn btn-success' %>
+  <%= button_tag 'Prophet Forecast', type: 'button', data: {controller: "forecast", action: "click->forecast#updateGraph", forecast_url_value: product_forecast_path(@product_id, @gl)},  class: 'btn btn-success' %>
 
   <%= button_tag 'LSTM Forecast', type: 'button', class: 'btn btn-secondary', onclick: "requestForecast('lstm')" %>
   <%= button_tag 'GRU Forecast', type: 'button', class: 'btn btn-secondary', onclick: "requestForecast('gru')" %>
@@ -71,18 +71,20 @@
     .catch(error => console.error('Error:', error));
   }
 
-  function updateChart(chartId, historicalData, forecastData) {
+function updateChart(chartId, historicalData, forecastData, min, max) {
     var chart = Chartkick.charts[chartId];
     if (chart) {
-      // Combining historical and forecast data
-      let updatedData = [
-        {name: "Historical", data: historicalData, color: "#3366CC"},
-        {name: "Forecast", data: forecastData, color: "#D9534F"}
-      ];
-      chart.updateData(updatedData);
+        
+        let updatedData = [
+            {name: "Historical", data: historicalData, color: "#3366CC"},
+            {name: "Forecast", data: forecastData, color: "#D9534F"}
+        ];
+        chart.updateData(updatedData);
+        chart.setOptions({min: min, max: max});
     } else {
-      console.log("Chart not found: ", chartId);
+        console.error("Chart not found: ", chartId);
     }
-  }
+}
+
 </script>
 
