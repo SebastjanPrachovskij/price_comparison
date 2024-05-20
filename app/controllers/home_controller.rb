@@ -51,7 +51,7 @@ class HomeController < ApplicationController
       [date.strftime("%Y-%m-%d"), price]
     end.to_h
 
-    @forecast = Prophet.forecast(historical_data, count: 24)
+    @forecast = Prophet.forecast(historical_data, count: 10)
     forecast_data = @forecast.map { |date, price| [date, price] }.to_h
 
     # Collect actual prices and forecasted prices for error calculation
@@ -112,3 +112,30 @@ class HomeController < ApplicationController
     puts "MAPE: #{mape_value}%"
   end
 end
+# 19:56:36 web.1    | Prophet Error Metrics
+# 19:56:36 web.1    | MSE: 138.0417829277792
+# 19:56:36 web.1    | SQRT(MSE): 11.749118389384762
+# 19:56:36 web.1    | MAE: 11.749118389384762
+# 19:56:36 web.1    | RMSE: 11.749118389384762
+# 19:56:36 web.1    | MAPE: 1.7005526688934378%
+
+# LSTM Error Metrics
+# MSE: 29.646115680972354
+# Sqrt(MSE): 5.44482466944275
+# MAE: 5.090996093750005
+# RMSE: 5.44482466944275
+# MAPE: 0.7372568938186335%
+
+# GRU Error Metrics
+# MSE: 25.227700060758742
+# Sqrt(MSE): 5.022718393535391
+# MAE: 4.730852050781254
+# RMSE: 5.022718393535391
+# MAPE: 0.7216229761131097%
+
+# SARIMAX Error Metrics
+# MSE: 80.27217795262621
+# Sqrt(MSE): 8.959474200678644
+# MAE: 8.285078447572596
+# RMSE: 8.959474200678644
+# MAPE: 1.1688290265020849%
